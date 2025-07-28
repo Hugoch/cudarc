@@ -223,6 +223,86 @@ impl Gemm<half::bf16> for CudaBlas {
     }
 }
 
+#[cfg(feature = "f8")]
+impl Gemm<float8::F8E5M2> for CudaBlas {
+    unsafe fn gemm<A: DevicePtr<float8::F8E5M2>, B: DevicePtr<float8::F8E5M2>, C: DevicePtr<float8::F8E5M2>>(
+        &self,
+        cfg: GemmConfig<float8::F8E5M2>,
+        a: &A,
+        b: &B,
+        c: &mut C,
+    ) -> Result<(), CublasError> {
+        let alpha: f32 = cfg.alpha.to_f32();
+        let beta: f32 = cfg.beta.to_f32();
+        let (a, _record_a) = a.device_ptr(&self.stream);
+        let (b, _record_b) = b.device_ptr(&self.stream);
+        let (c, _record_c) = c.device_ptr_mut(&self.stream);
+        result::gemm_ex(
+            self.handle,
+            cfg.transa,
+            cfg.transb,
+            cfg.m,
+            cfg.n,
+            cfg.k,
+            (&alpha) as *const f32 as *const _,
+            a as *const _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.lda,
+            b as *const _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.ldb,
+            (&beta) as *const f32 as *const _,
+            c as *mut _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.ldc,
+            sys::cublasComputeType_t::CUBLAS_COMPUTE_32F,
+            sys::cublasGemmAlgo_t::CUBLAS_GEMM_DEFAULT,
+        )
+    }
+    unsafe fn gemm_strided_batched<
+        A: DevicePtr<float8::F8E5M2>,
+        B: DevicePtr<float8::F8E5M2>,
+        C: DevicePtrMut<float8::F8E5M2>,
+    >(
+        &self,
+        cfg: StridedBatchedConfig<float8::F8E5M2>,
+        a: &A,
+        b: &B,
+        c: &mut C,
+    ) -> Result<(), CublasError> {
+        let alpha: f32 = cfg.gemm.alpha.to_f32();
+        let beta: f32 = cfg.gemm.beta.to_f32();
+        let (a, _record_a) = a.device_ptr(&self.stream);
+        let (b, _record_b) = b.device_ptr(&self.stream);
+        let (c, _record_c) = c.device_ptr_mut(&self.stream);
+        result::gemm_strided_batched_ex(
+            self.handle,
+            cfg.gemm.transa,
+            cfg.gemm.transb,
+            cfg.gemm.m,
+            cfg.gemm.n,
+            cfg.gemm.k,
+            (&alpha) as *const f32 as *const _,
+            a as *const _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.gemm.lda,
+            cfg.stride_a,
+            b as *const _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.gemm.ldb,
+            cfg.stride_b,
+            (&beta) as *const f32 as *const _,
+            c as *mut _,
+            sys::cudaDataType_t::CUDA_R_8F_E5M2,
+            cfg.gemm.ldc,
+            cfg.stride_c,
+            cfg.batch_size,
+            sys::cublasComputeType_t::CUBLAS_COMPUTE_32F,
+            sys::cublasGemmAlgo_t::CUBLAS_GEMM_DEFAULT,
+        )
+    }
+}
+
 impl Gemm<f32> for CudaBlas {
     unsafe fn gemm<A: DevicePtr<f32>, B: DevicePtr<f32>, C: DevicePtrMut<f32>>(
         &self,

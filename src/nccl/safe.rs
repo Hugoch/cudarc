@@ -87,6 +87,10 @@ define_nccl_type!(char, sys::ncclDataType_t::ncclUint8);
 define_nccl_type!(half::f16, sys::ncclDataType_t::ncclFloat16);
 #[cfg(feature = "f16")]
 define_nccl_type!(half::bf16, sys::ncclDataType_t::ncclBfloat16);
+#[cfg(feature = "f8")]
+define_nccl_type!(float8::F8E5M2, sys::ncclDataType_t::ncclFloat8e5m2);
+#[cfg(feature = "f8")]
+define_nccl_type!(float8::F8E4M3, sys::ncclDataType_t::ncclFloat8e4m3);
 impl Comm {
     /// Primitive to create new communication link on a single thread.
     /// WARNING: You are likely to get limited throughput using a single core

@@ -55,9 +55,11 @@ cusolvermg = ["cusolver"]
 std = []
 no-std = ["no-std-compat/std"]
 f16 = ["dep:half"]
+f8 = ["dep:float8"]
 
 [dependencies]
 no-std-compat = { version = "0.4.1", optional = true, features = ["alloc"] }
+float8 = { version = "0.3.0", features = ["cuda"], optional = true }
 half = { version = "2.4.1", optional = true, default-features = false, features = [
     "num-traits",
     "rand_distr",
