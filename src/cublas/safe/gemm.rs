@@ -225,7 +225,11 @@ impl Gemm<half::bf16> for CudaBlas {
 
 #[cfg(feature = "f8")]
 impl Gemm<float8::F8E5M2> for CudaBlas {
-    unsafe fn gemm<A: DevicePtr<float8::F8E5M2>, B: DevicePtr<float8::F8E5M2>, C: DevicePtr<float8::F8E5M2>>(
+    unsafe fn gemm<
+        A: DevicePtr<float8::F8E5M2>,
+        B: DevicePtr<float8::F8E5M2>,
+        C: DevicePtr<float8::F8E5M2>,
+    >(
         &self,
         cfg: GemmConfig<float8::F8E5M2>,
         a: &A,
