@@ -461,6 +461,28 @@ impl Matmul<half::bf16> for CudaBlasLT {
     }
 }
 
+#[cfg(feature = "f8")]
+impl Matmul<float8::F8E5M2> for CudaBlasLT {
+    fn matrix_type() -> sys::cudaDataType {
+        sys::cudaDataType_t::CUDA_R_8F_E5M2
+    }
+
+    fn compute_type() -> sys::cublasComputeType_t {
+        sys::cublasComputeType_t::CUBLAS_COMPUTE_32F
+    }
+}
+
+#[cfg(feature = "f8")]
+impl Matmul<float8::F8E4M3> for CudaBlasLT {
+    fn matrix_type() -> sys::cudaDataType {
+        sys::cudaDataType_t::CUDA_R_8F_E4M3
+    }
+
+    fn compute_type() -> sys::cublasComputeType_t {
+        sys::cublasComputeType_t::CUBLAS_COMPUTE_32F
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::needless_range_loop)]
