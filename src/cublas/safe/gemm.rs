@@ -228,7 +228,7 @@ impl Gemm<float8::F8E5M2> for CudaBlas {
     unsafe fn gemm<
         A: DevicePtr<float8::F8E5M2>,
         B: DevicePtr<float8::F8E5M2>,
-        C: DevicePtr<float8::F8E5M2>,
+        C: DevicePtrMut<float8::F8E5M2>,
     >(
         &self,
         cfg: GemmConfig<float8::F8E5M2>,
